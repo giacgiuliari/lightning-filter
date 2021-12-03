@@ -162,6 +162,7 @@ static uint16_t nb_txd = RTE_TEST_TX_DESC_DEFAULT;
 #define IPV4_VERSION 0x4
 
 // Cryptography related constants
+#define NUM_ROUND_KEYS 11
 #define BLOCK_SIZE 16
 #define IV_SIZE 16
 
@@ -592,7 +593,7 @@ static int get_time(unsigned lcore_id, struct timeval *tv_now) {
 
 static void compute_chksum(unsigned lcore_id, unsigned char drkey[BLOCK_SIZE], rte_be32_t src_addr,
 	rte_be32_t dst_addr, void *data, size_t data_len, unsigned char chksum[BLOCK_SIZE],
-	unsigned char rkey_buf[10 * BLOCK_SIZE], unsigned char addr_buf[32]) {
+	unsigned char rkey_buf[NUM_ROUND_KEYS * BLOCK_SIZE], unsigned char addr_buf[32]) {
 	RTE_ASSERT(data_len % BLOCK_SIZE == 0);
 	RTE_ASSERT(data_len <= INT_MAX);
 	(void)memset(addr_buf, 0, 32);
@@ -603,12 +604,12 @@ static void compute_chksum(unsigned lcore_id, unsigned char drkey[BLOCK_SIZE], r
 	(void)lcore_id;
 
 	// derive the second-order key based on the first order key
-	(void)memset(rkey_buf, 0, 10 * BLOCK_SIZE);
+	(void)memset(rkey_buf, 0, NUM_ROUND_KEYS * BLOCK_SIZE);
 	(void)ExpandKey128(drkey, rkey_buf);
 	(void)CBCMAC(rkey_buf, 32 / BLOCK_SIZE, addr_buf, chksum);
 
 	// compute per-packet MAC using the second-order key
-	(void)memset(rkey_buf, 0, 10 * BLOCK_SIZE);
+	(void)memset(rkey_buf, 0, NUM_ROUND_KEYS * BLOCK_SIZE);
 	(void)ExpandKey128(chksum, rkey_buf);
 	(void)CBCMAC(rkey_buf, data_len / BLOCK_SIZE, data, chksum);
 #else
@@ -2235,7 +2236,7 @@ static void scionfwd_main_loop(void) {
 	key_hosts_addrs[lcore_id] = rte_malloc(NULL, 32, 16);
 	RTE_ASSERT(key_hosts_addrs[lcore_id]);
 
-	roundkey[lcore_id] = rte_malloc(NULL, 10 * 16, 16);
+	roundkey[lcore_id] = rte_malloc(NULL, NUM_ROUND_KEYS * BLOCK_SIZE, BLOCK_SIZE);
 	RTE_ASSERT(roundkey[lcore_id]);
 
 	// zeroing is not required for CMAC(), but using output also
