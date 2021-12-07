@@ -173,6 +173,8 @@ static uint16_t nb_txd = RTE_TEST_TX_DESC_DEFAULT;
  * SCION Headers
  */
 
+#define SCION_PROTOCOL_DL_SL_MASK 0x33
+
 #define SCION_PROTOCOL_HBH 200
 #define SCION_PROTOCOL_E2E 201
 
@@ -911,11 +913,10 @@ static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *et
 			}
 #endif
 
-			if (unlikely(scion_cmn_hdr->dt_dl_st_sl != 0)) {
+			if (unlikely((scion_cmn_hdr->dt_dl_st_sl & SCION_PROTOCOL_DL_SL_MASK) != 0)) {
 				// #if LOG_PACKETS
 				printf(
-					"[%d] Not yet implemented: SCION packet contains unsupported host-address "
-					"types/lengths.\n",
+					"[%d] Not yet implemented: SCION packet contains unsupported host-address lengths.\n",
 					lcore_id);
 				// #endif
 				return -1;
@@ -1339,11 +1340,10 @@ static int handle_outbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *e
 				}
 #endif
 
-				if (unlikely(scion_cmn_hdr->dt_dl_st_sl != 0)) {
+				if (unlikely((scion_cmn_hdr->dt_dl_st_sl & SCION_PROTOCOL_DL_SL_MASK) != 0)) {
 					// #if LOG_PACKETS
 					printf(
-						"[%d] Not yet implemented: SCION packet contains unsupported host-address "
-						"types/lengths.\n",
+						"[%d] Not yet implemented: SCION packet contains unsupported host-address lengths.\n",
 						lcore_id);
 					// #endif
 					return -1;
