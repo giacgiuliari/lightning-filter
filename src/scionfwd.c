@@ -212,7 +212,7 @@ struct scion_packet_authenticator_opt {
 	uint8_t type;
 	uint8_t data_len;
 	uint8_t algorithm;
-	uint8_t reserved[2];
+	uint8_t reserved;
 	uint8_t l4_payload_chksum[BLOCK_SIZE];
 	uint16_t l4_payload_len;
 } __attribute__((__packed__));
@@ -1108,9 +1108,7 @@ static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *et
 								return -1;
 							}
 #if CHECK_PACKET_STRUCTURE
-							if (unlikely((scion_packet_authenticator_opt->reserved[0] != 0)
-													 || (scion_packet_authenticator_opt->reserved[1] != 0)))
-							{
+							if (unlikely(scion_packet_authenticator_opt->reserved != 0)) {
 								// #if LOG_PACKETS
 								printf(
 									"[%d] Invalid SCION packet: invalid reserved fields in SCION packet "
@@ -1517,8 +1515,7 @@ static int handle_outbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *e
 					- sizeof scion_packet_authenticator_opt->data_len;
 				scion_packet_authenticator_opt->algorithm = SCION_SPAO_ALGORITHM_TYPE_EXP;
 
-				scion_packet_authenticator_opt->reserved[0] = 0;
-				scion_packet_authenticator_opt->reserved[1] = 0;
+				scion_packet_authenticator_opt->reserved = 0;
 
 				uint16_t l4_payload_len = scion_payload_len - total_ext_len;
 
