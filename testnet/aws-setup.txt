@@ -132,9 +132,9 @@ reboot
 ```
 cd ~
 
-curl -LO https://golang.org/dl/go1.16.6.linux-amd64.tar.gz
-echo "be333ef18b3016e9d7cb7b1ff1fdb0cac800ca0be4cf2290fe613b3d069dfe0d go1.16.6.linux-amd64.tar.gz" | sha256sum -c
-sudo tar -C /usr/local -xzf go1.16.6.linux-amd64.tar.gz
+curl -LO https://go.dev/dl/go1.17.4.linux-amd64.tar.gz
+echo "adab2483f644e2f8a10ae93122f0018cef525ca48d0b8764dae87cb5f4fd4206 go1.17.4.linux-amd64.tar.gz" | sha256sum -c
+sudo tar -C /usr/local -xzf go1.17.4.linux-amd64.tar.gz
 
 echo >> .bash_profile
 echo 'export PATH=$PATH:/usr/local/go/bin' >> .bash_profile
