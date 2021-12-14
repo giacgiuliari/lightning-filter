@@ -207,7 +207,7 @@ After setting up protected end hosts as described in section 3, edit ~/lightning
          "rate_limit": 9223372036854775807
       },
       {
-         "isd_as": "<peer ISD and AS number, e.g., 1-ff00:0:2.",
+         "isd_as": "<peer ISD and AS number, e.g., 1-ff00:0:2>",
          "public_addr": "<internal_addr of border router, see /etc/scion/topology.json of protected end host>",
          "rate_limit": 9223372036854775807
       }
@@ -264,8 +264,76 @@ Run client example app on end host EH1:
 ~/lightning-filter/testnet/c -sciond 127.0.0.1:30255 -local <local ISD-AS number>,<public IP address of EH1>:0 -remote <remote ISD-AS number>,<public IP address of EH0>:<listener port of example app on EH0>
 ```
 
+4. Install SCION IP Gateway on EH0 and EH1:
+-------------------------------------------
 
-4. References:
+An easy way to integrate IP based applications into a SCION network is to install a SCION IP Gateway (SIG) as a so called sidecar proxy directly on the end host. See [6] for instructions on how to install SIG on EH0 and EH1.
+
+Next add the two SIG instances to the topology files on LF0, LF1, EH0, and EH1:
+
+```
+  "sigs": {
+    "sig-1": {
+      "ctrl_addr": "<public IP address of protected end host>:30256",
+      "data_addr": "<public IP address of protected end host>:30056"
+    }
+```
+
+(Use the public IP address of EH0 in the SCION topology files of LF0 and EH0 and the public IP address of EH1 in the SCION topology files of LF1 and EH1).
+
+The traffic rules in `/etc/scion/sig.json` on EH0 and EH1 should be configured like follows:
+
+```
+{
+    "ASes": {
+        "<peer ISD and AS number, e.g., 1-ff00:0:2>": {
+            "Nets": [
+                "<public IP address of protected peer end host>/32"
+            ]
+        }
+    },
+    "ConfigVersion": 9001
+}
+```
+
+The file `/etc/scion/sig.toml` on EH1 and EH1 should contain entries like in the following example:
+
+```
+...
+
+[gateway]
+traffic_policy_file = "/etc/scion/sig.json"
+ctrl_addr = "<public IP address of the local protected end host>:30256"
+data_addr = "<public IP address of the local protected end host>:30056"
+probe_addr = "<public IP address of the local protected end host>:30856"
+
+[tunnel]
+src_ipv4 = "<public IP address of the local protected end host>"
+```
+
+Finally, it is necessary to add the public IP address of the protected end host to the loopback interface on EH0 and EH1, respectively:
+
+```
+sudo ip address add <public IP address of the local protected end host> dev lo
+```
+
+(See [6] for more information on this last configuration step.)
+
+With these changes in place, it is now possible to use the public IP addresses of the two end hosts in unmodified IP based applications and have the corresponding traffic safely routed via SCION with both end hosts EH0 and EH1 being protected by the two Lightning Filter instances LF0 and LF1:
+
+For example, run a UDP server on end host EH0:
+
+```
+nc -ukl <public IP address of EH0> <listener port of example app on EH0>
+```
+
+Run a UDP client on end host EH1:
+
+```
+nc -u <public IP address of EH0> <listener port of example app on EH0>
+```
+
+5. References:
 --------------
 
 [1] https://aws.amazon.com/blogs/aws/new-vpc-ingress-routing-simplifying-integration-of-third-party-appliances/
@@ -277,3 +345,5 @@ Run client example app on end host EH1:
 [4] https://github.com/netsec-ethz/scion-apps/tree/master/_examples/hellodrkey#cs-configuration
 
 [5] https://docs.scionlab.org/content/config/setup_endhost.html
+
+[6] https://docs.scionlab.org/content/apps/remote_sig.html
