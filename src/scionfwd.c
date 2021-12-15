@@ -812,6 +812,10 @@ static int apply_non_auth_pkt_rate_limit_filter(
 static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *ether_hdr0,
 	struct rte_ipv4_hdr *ipv4_hdr0, struct lf_config_backend *backend, const unsigned lcore_id,
 	struct lcore_values *lvars, int16_t state) {
+#if !CHECK_PACKET_STRUCTURE
+	(void)ether_hdr0;
+#endif
+
 	int r;
 
 	uint16_t ipv4_total_length0 = rte_be_to_cpu_16(ipv4_hdr0->total_length);
@@ -842,10 +846,10 @@ static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *et
 		}
 #endif
 
-		uint16_t ipv4_data_length0 = ipv4_total_length0 - ipv4_hdr_length0;
-
 		struct rte_udp_hdr *udp_hdr;
 #if CHECK_PACKET_STRUCTURE
+		uint16_t ipv4_data_length0 = ipv4_total_length0 - ipv4_hdr_length0;
+
 		if (unlikely(sizeof *udp_hdr > m->data_len - sizeof *ether_hdr0 - ipv4_hdr_length0)) {
 			// #if LOG_PACKETS
 			printf("[%d] Not yet implemented: UDP header exceeds first buffer segment.\n", lcore_id);
@@ -855,8 +859,9 @@ static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *et
 #endif
 		udp_hdr = (struct rte_udp_hdr *)((char *)ipv4_hdr0 + ipv4_hdr_length0);
 
-		uint16_t udp_dgram_length0 = rte_be_to_cpu_16(udp_hdr->dgram_len);
 #if CHECK_PACKET_STRUCTURE
+		uint16_t udp_dgram_length0 = rte_be_to_cpu_16(udp_hdr->dgram_len);
+
 		if (unlikely(udp_dgram_length0 != ipv4_data_length0)) {
 			// #if LOG_PACKETS
 			printf(
@@ -864,8 +869,7 @@ static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *et
 			// #endif
 			return -1;
 		}
-#endif
-#if CHECK_PACKET_STRUCTURE
+
 		if (unlikely(udp_dgram_length0 < sizeof *udp_hdr)) {
 			// #if LOG_PACKETS
 			printf("[%d] Invalid UDP packet: datagram length smaller than header length.\n", lcore_id);
@@ -874,10 +878,10 @@ static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *et
 		}
 #endif
 
-		uint16_t udp_data_length0 = udp_dgram_length0 - sizeof *udp_hdr;
-
 		struct scion_cmn_hdr *scion_cmn_hdr;
 #if CHECK_PACKET_STRUCTURE
+		uint16_t udp_data_length0 = udp_dgram_length0 - sizeof *udp_hdr;
+
 		if (unlikely(sizeof *scion_cmn_hdr > udp_data_length0)) {
 			// #if LOG_PACKETS
 			printf("[%d] Invalid SCION packet: header exceeds datagram length.\n", lcore_id);
@@ -935,9 +939,9 @@ static int handle_inbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *et
 #endif
 			scion_addr_hdr = (struct scion_addr_hdr *)(scion_cmn_hdr + 1);
 
+#if CHECK_PACKET_STRUCTURE
 			uint16_t scion_payload_len0 = rte_be_to_cpu_16(scion_cmn_hdr->payload_len);
 
-#if CHECK_PACKET_STRUCTURE
 			if (unlikely(scion_payload_len0 != udp_data_length0 - scion_cmn_hdr_len0)) {
 				// #if LOG_PACKETS
 				printf(
@@ -1263,10 +1267,10 @@ static int handle_outbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *e
 		}
 #endif
 
-		uint16_t ipv4_data_length0 = ipv4_total_length0 - ipv4_hdr_length0;
-
 		struct rte_udp_hdr *udp_hdr;
 #if CHECK_PACKET_STRUCTURE
+		uint16_t ipv4_data_length0 = ipv4_total_length0 - ipv4_hdr_length0;
+
 		if (unlikely(sizeof *udp_hdr > m->data_len - sizeof *ether_hdr0 - ipv4_hdr_length0)) {
 			// #if LOG_PACKETS
 			printf("[%d] Not yet implemented: UDP header exceeds first buffer segment.\n", lcore_id);
@@ -1301,10 +1305,10 @@ static int handle_outbound_scion_pkt(struct rte_mbuf *m, struct rte_ether_hdr *e
 			}
 #endif
 
-			uint16_t udp_data_length0 = udp_dgram_length0 - sizeof *udp_hdr;
-
 			struct scion_cmn_hdr *scion_cmn_hdr;
 #if CHECK_PACKET_STRUCTURE
+			uint16_t udp_data_length0 = udp_dgram_length0 - sizeof *udp_hdr;
+
 			if (unlikely(sizeof *scion_cmn_hdr > udp_data_length0)) {
 				// #if LOG_PACKETS
 				printf("[%d] Invalid SCION packet: header exceeds datagram length.\n", lcore_id);
