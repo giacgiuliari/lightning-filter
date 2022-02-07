@@ -56,7 +56,6 @@ go build -o ./bin/ ./go/scion-pki/
 cd ~
 git clone https://github.com/marcfrei/lightning-filter.git
 cd lightning-filter/
-git checkout marcfrei/scion_support
 
 cd ~/lightning-filter/testnet/
 go build c.go && go build s.go

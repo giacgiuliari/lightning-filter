@@ -159,7 +159,6 @@ LF0 and EH0 will be part of one SCIONLab AS while LF1 together with EH1 will for
 cd ~
 git clone https://github.com/marcfrei/lightning-filter.git
 cd lightning-filter/
-git checkout marcfrei/scion_support
 ```
 
 Open src/scionfwd.c, find the following build-time options, and and make sure that they are configured as follows:
