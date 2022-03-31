@@ -29,8 +29,8 @@ func GetDelegationSecret(sciondAddr *C.char, srcIA, dstIA uint64, valTime int64,
 	dsMeta := drkey.Lvl2Meta{
 		KeyType:  drkey.AS2AS,
 		Protocol: "piskes",
-		SrcIA:    addr.IAInt(srcIA).IA(),
-		DstIA:    addr.IAInt(dstIA).IA(),
+		SrcIA:    addr.IA(srcIA),
+		DstIA:    addr.IA(dstIA),
 	}
 	lvl2Key, err := sd.DRKeyGetLvl2Key(ctx, dsMeta, time.Unix(valTime, 0).UTC())
 	if err != nil {
