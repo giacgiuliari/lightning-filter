@@ -1860,7 +1860,7 @@ static int handle_outbound_pkt(struct rte_mbuf *m, struct rte_ether_hdr *ether_h
 
 	struct lf_config_peer peer;
 	int is_peer = find_peer(ipv4_hdr0->dst_addr, &peer);
-	if (is_peer && 0) {
+	if (is_peer) {
 		uint16_t ipv4_total_length0 = rte_be_to_cpu_16(ipv4_hdr0->total_length);
 
 		if (unlikely(ipv4_total_length0 != m->data_len - sizeof *ether_hdr0)) {
