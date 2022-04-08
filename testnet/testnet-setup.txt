@@ -23,10 +23,9 @@ export RTE_SDK=$(pwd)
 make defconfig
 make
 
-sudo su
-echo "vm.nr_hugepages=64" >> /etc/sysctl.conf
-echo "kernel.randomize_va_space=0" >> /etc/sysctl.conf
-reboot
+echo 'vm.nr_hugepages=64' | sudo tee -a /etc/sysctl.conf > /dev/null
+echo 'kernel.randomize_va_space=0' | sudo tee -a /etc/sysctl.conf > /dev/null
+sudo reboot
 
 cd ~
 
