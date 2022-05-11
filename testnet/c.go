@@ -61,7 +61,7 @@ func sendHello(sciondAddr, dispatcherSocket string, localAddr snet.UDPAddr, remo
 				IA: remoteAddr.IA,
 				Host: addr.HostFromIP(remoteAddr.Host.IP),
 			},
-			Path: sp.Path(),
+			Path: sp.Dataplane(),
 			Payload: snet.UDPPayload{
 				SrcPort: localPort,
 				DstPort: uint16(remoteAddr.Host.Port),

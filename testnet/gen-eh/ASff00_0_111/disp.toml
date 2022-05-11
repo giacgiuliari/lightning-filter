@@ -8,5 +8,8 @@ prometheus = "[10.248.3.1]:30441"
 
 [features]
 
+[api]
+addr = "[10.248.3.1]:31141"
+
 [log.console]
 level = "debug"

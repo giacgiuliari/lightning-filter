@@ -30,14 +30,14 @@ sudo reboot
 cd ~
 
 On x86:
-	curl -LO https://golang.org/dl/go1.16.6.linux-amd64.tar.gz
-	echo "be333ef18b3016e9d7cb7b1ff1fdb0cac800ca0be4cf2290fe613b3d069dfe0d go1.16.6.linux-amd64.tar.gz" | sha256sum -c
-	sudo tar -C /usr/local -xzf go1.16.6.linux-amd64.tar.gz
+	curl -LO https://golang.org/dl/go1.17.10.linux-amd64.tar.gz
+	echo "87fc728c9c731e2f74e4a999ef53cf07302d7ed3504b0839027bd9c10edaa3fd go1.17.10.linux-amd64.tar.gz" | sha256sum -c
+	sudo tar -C /usr/local -xzf go1.17.10.linux-amd64.tar.gz
 
 On ARM:
-	curl -LO https://golang.org/dl/go1.16.6.linux-arm64.tar.gz
-	echo "9e38047463da6daecab9017cd0599f33f84991e68263752cfab49253bbc98c30 go1.16.6.linux-arm64.tar.gz" | sha256sum -c
-	sudo tar -C /usr/local -xzf go1.16.6.linux-arm64.tar.gz
+	curl -LO https://golang.org/dl/go1.17.10.linux-arm64.tar.gz
+	echo "649141201efa7195403eb1301b95dc79c5b3e65968986a391da1370521701b0c go1.17.10.linux-arm64.tar.gz" | sha256sum -c
+	sudo tar -C /usr/local -xzf go1.17.10.linux-arm64.tar.gz
 
 echo >> .bash_profile
 echo 'export PATH=$PATH:/usr/local/go/bin' >> .bash_profile
