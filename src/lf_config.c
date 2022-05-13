@@ -223,6 +223,41 @@ static void reader_read_selector(struct reader *rd, char *val, size_t length) {
 	}
 }
 
+static void reader_read_auth_secret(struct reader *rd, uint8_t val[16]) {
+	reader_skip_forward(rd);
+	if (rd->state == READER_STATE_ERROR) {
+		return;
+	}
+	char secretstr[sizeof "00112233445566778899aabbccddeeff"];
+	reader_read_string(rd, secretstr, sizeof secretstr);
+	if (rd->state == READER_STATE_ERROR) {
+		return;
+	}
+	size_t i = 0;
+	size_t k = 0;
+	do {
+		val[k] = 0;
+		size_t j = i;
+		do {
+			assert(j < sizeof secretstr);
+			int x = secretstr[j];
+			if (('0' <= x) && (x <= '9')) {
+				val[k] = (val[k] << 4) | (x - '0');
+			} else if (('a' <= x) && (x <= 'f')) {
+				val[k] = (val[k] << 4) | (x - 'a' + 10);
+			} else {
+				rd->state = READER_STATE_ERROR;
+				return;
+			}
+			j++;
+		} while (j - i != 2);
+		i += 2;
+		k++;
+	} while (k != 16);
+	assert(i < sizeof secretstr);
+	assert(secretstr[i] == '\0');
+}
+
 static void reader_read_ether_addr(struct reader *rd, uint8_t val[6]) {
 	reader_skip_forward(rd);
 	if (rd->state == READER_STATE_ERROR) {
@@ -555,8 +590,12 @@ static void reader_read_peers(struct reader *rd, struct lf_config *c) {
 		}
 		uint64_t isd_as = 0;
 		uint32_t public_addr = 0;
+		uint8_t auth_secret[16] = {
+			0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+			0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 		uint64_t rate_limit = 0;
-		uint8_t ether_addr[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
+		uint8_t ether_addr[6] = {
+			0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 		do {
 			char selector[256];
 			reader_read_selector(rd, selector, sizeof selector);
@@ -567,6 +606,8 @@ static void reader_read_peers(struct reader *rd, struct lf_config *c) {
 				reader_read_isd_as(rd, &isd_as);
 			} else if (strncmp(selector, "public_addr", sizeof selector) == 0) {
 				reader_read_ipv4_addr(rd, &public_addr);
+			} else if (strncmp(selector, "auth_secret", sizeof selector) == 0) {
+				reader_read_auth_secret(rd, auth_secret);
 			} else if (strncmp(selector, "rate_limit", sizeof selector) == 0) {
 				reader_read_rate_limit(rd, &rate_limit);
 			} else if (strncmp(selector, "ether_addr", sizeof selector) == 0) {
@@ -594,6 +635,22 @@ static void reader_read_peers(struct reader *rd, struct lf_config *c) {
 		x->next = NULL;
 		x->isd_as = isd_as;
 		x->public_addr = public_addr;
+		x->auth_secret[0] = auth_secret[0];
+		x->auth_secret[1] = auth_secret[1];
+		x->auth_secret[2] = auth_secret[2];
+		x->auth_secret[3] = auth_secret[3];
+		x->auth_secret[4] = auth_secret[4];
+		x->auth_secret[5] = auth_secret[5];
+		x->auth_secret[6] = auth_secret[6];
+		x->auth_secret[7] = auth_secret[7];
+		x->auth_secret[8] = auth_secret[8];
+		x->auth_secret[9] = auth_secret[9];
+		x->auth_secret[10] = auth_secret[10];
+		x->auth_secret[11] = auth_secret[11];
+		x->auth_secret[12] = auth_secret[12];
+		x->auth_secret[13] = auth_secret[13];
+		x->auth_secret[14] = auth_secret[14];
+		x->auth_secret[15] = auth_secret[15];
 		x->rate_limit = rate_limit;
 		x->ether_addr[0] = ether_addr[0];
 		x->ether_addr[1] = ether_addr[1];

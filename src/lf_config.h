@@ -12,6 +12,7 @@ struct lf_config_peer {
 	struct lf_config_peer *next;
 	uint64_t isd_as;
 	uint32_t public_addr; /* in network byte order */
+	uint8_t auth_secret[16];
 	uint64_t rate_limit;
 	uint8_t ether_addr[6];
 };

@@ -2857,8 +2857,6 @@ static int fetch_delegation_secret(
 		usleep(500 * 1000);
 	}
 #else
-	(void)src_ia;
-	(void)dst_ia;
 	int64_t m = val_time % DEFAULT_KEY_VALIDITY;
 	if (m < 0) {
 		m += DEFAULT_KEY_VALIDITY;
@@ -2873,7 +2871,24 @@ static int fetch_delegation_secret(
 	} else {
 		ds->validity_not_after = INT64_MAX;
 	}
-	memset(ds->key, 0, sizeof ds->key);
+	uint64_t p_isd_as;
+	if (config.isd_as == src_ia) {
+		p_isd_as = dst_ia;
+	} else if (config.isd_as == dst_ia) {
+		p_isd_as = src_ia;
+	} else {
+		RTE_ASSERT(0);
+	}	
+	struct lf_config_peer *x = config.peers;
+	while ((x != NULL) && (x->isd_as != p_isd_as)) {
+		x = x->next;
+	}
+	if (x != NULL) {
+		RTE_ASSERT(sizeof ds->key == sizeof x->auth_secret);
+		rte_memcpy(ds->key, x->auth_secret, sizeof ds->key);
+	} else {
+		memset(ds->key, 0, sizeof ds->key);
+	}
 	r = 0;
 #endif
 #if LOG_DELEGATION_SECRETS
