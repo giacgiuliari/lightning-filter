@@ -7,8 +7,16 @@
 			"rate_limit": 9223372036854775807
 		},
 		{
+			"isd_as": "1-ff00:0:111",
+			"public_addr": "10.248.2.2",
+			"auth_secret": "0426864f0b336fc4acd4c646171b5b75",
+			"rate_limit": 9223372036854775807,
+			"ether_addr": "00:76:65:74:68:31"
+		},
+		{
 			"isd_as": "1-ff00:0:112",
-			"public_addr": "10.248.1.1",
+			"public_addr": "10.248.5.2",
+			"auth_secret": "fd10093bd14b34deb86635f141cdc110",
 			"rate_limit": 9223372036854775807,
 			"ether_addr": "00:76:65:74:68:31"
 		}
