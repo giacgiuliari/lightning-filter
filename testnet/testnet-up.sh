@@ -72,28 +72,28 @@ sudo ip route add 10.248.3.0/24 dev one via 10.248.1.2
 sudo ip route add 10.248.5.0/24 dev five via 10.248.4.2
 sudo ip route add 10.248.6.0/24 dev five via 10.248.4.2
 
-# sudo ip netns exec near-0 ip route add 10.248.4.0/24 dev two via 10.248.1.1
-# sudo ip netns exec near-0 ip route add 10.248.5.0/24 dev two via 10.248.1.1
-# sudo ip netns exec near-0 ip route add 10.248.6.0/24 dev two via 10.248.1.1
+sudo ip netns exec near-0 ip route add 10.248.4.0/24 dev two via 10.248.1.1
+sudo ip netns exec near-0 ip route add 10.248.5.0/24 dev two via 10.248.1.1
+sudo ip netns exec near-0 ip route add 10.248.6.0/24 dev two via 10.248.1.1
 
-# sudo ip netns exec near-0 ip route add 10.248.3.0/24 dev three via 10.248.2.2
+sudo ip netns exec near-0 ip route add 10.248.3.0/24 dev three via 10.248.2.2
 
-# sudo ip netns exec near-0 ip route change 10.248.1.0/24 dev two via 10.248.1.1
-# sudo ip netns exec near-0 ip route change 10.248.2.0/24 dev three via 10.248.2.2
+sudo ip netns exec near-0 ip route change 10.248.1.0/24 dev two via 10.248.1.1
+sudo ip netns exec near-0 ip route change 10.248.2.0/24 dev three via 10.248.2.2
 
 sudo ip netns exec far-0 ip route add 10.248.1.0/24 dev four via 10.248.2.1
 sudo ip netns exec far-0 ip route add 10.248.4.0/24 dev four via 10.248.2.1
 sudo ip netns exec far-0 ip route add 10.248.5.0/24 dev four via 10.248.2.1
 sudo ip netns exec far-0 ip route add 10.248.6.0/24 dev four via 10.248.2.1
 
-# sudo ip netns exec near-1 ip route add 10.248.1.0/24 dev six via 10.248.4.1
-# sudo ip netns exec near-1 ip route add 10.248.2.0/24 dev six via 10.248.4.1
-# sudo ip netns exec near-1 ip route add 10.248.3.0/24 dev six via 10.248.4.1
+sudo ip netns exec near-1 ip route add 10.248.1.0/24 dev six via 10.248.4.1
+sudo ip netns exec near-1 ip route add 10.248.2.0/24 dev six via 10.248.4.1
+sudo ip netns exec near-1 ip route add 10.248.3.0/24 dev six via 10.248.4.1
 
-# sudo ip netns exec near-1 ip route add 10.248.6.0/24 dev seven via 10.248.5.2
+sudo ip netns exec near-1 ip route add 10.248.6.0/24 dev seven via 10.248.5.2
 
-# sudo ip netns exec near-1 ip route change 10.248.4.0/24 dev six via 10.248.4.1
-# sudo ip netns exec near-1 ip route change 10.248.5.0/24 dev seven via 10.248.5.2
+sudo ip netns exec near-1 ip route change 10.248.4.0/24 dev six via 10.248.4.1
+sudo ip netns exec near-1 ip route change 10.248.5.0/24 dev seven via 10.248.5.2
 
 sudo ip netns exec far-1 ip route add 10.248.1.0/24 dev eight via 10.248.5.1
 sudo ip netns exec far-1 ip route add 10.248.2.0/24 dev eight via 10.248.5.1
