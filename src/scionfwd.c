@@ -2779,7 +2779,7 @@ static void add_new_key_dictionary_entry(
 	if (r == -1) {
 		rte_exit(EXIT_FAILURE, "Registration of key store node failed.\n");
 	}
-	RTE_ASSERT(r == 0);
+	// RTE_ASSERT(r == 0);
 }
 
 static void add_key_dictionary_entries(uint64_t peer_ia) {
