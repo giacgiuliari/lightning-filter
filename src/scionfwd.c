@@ -1786,11 +1786,13 @@ static int handle_inbound_pkt(struct rte_mbuf *m, struct rte_ether_hdr *ether_hd
 			uint16_t ipv4_total_length1 = rte_be_to_cpu_16(ipv4_hdr1->total_length);
 			RTE_ASSERT(ipv4_total_length1 == m->data_len - sizeof *ether_hdr1);
 
-			r = apply_auth_pkt_rate_limit_filter(lcore_id, state, lf_hdr->src_ia, ipv4_total_length1);
-			if (r != 0) {
-				RTE_ASSERT(r == -1);
-				return -1;
-			}
+            if (dst_port == 8000) {   // Magic number: only rate limit packets to the consensus port
+                r = apply_auth_pkt_rate_limit_filter(lcore_id, state, lf_hdr->src_ia, ipv4_total_length1);
+                if (r != 0) {
+                    RTE_ASSERT(r == -1);
+                    return -1;
+                }
+            }
 
 			ipv4_hdr1->hdr_checksum = 0;
 			ipv4_hdr1->src_addr = ipv4_hdr_src_addr0;
