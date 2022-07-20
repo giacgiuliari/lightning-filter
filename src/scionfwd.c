@@ -1788,7 +1788,7 @@ static int handle_inbound_pkt(struct rte_mbuf *m, struct rte_ether_hdr *ether_hd
 
             if (dst_port == 8000) {   // Magic number: only rate limit packets to the consensus port
                 r = apply_auth_pkt_rate_limit_filter(lcore_id, state, lf_hdr->src_ia, ipv4_total_length1);
-				printf("Inbound packet to port 8000 rate limited",);
+				printf("Inbound packet to port 8000 rate limited");
                 if (r != 0) {
                     RTE_ASSERT(r == -1);
                     return -1;
