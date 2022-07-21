@@ -1786,12 +1786,25 @@ static int handle_inbound_pkt(struct rte_mbuf *m, struct rte_ether_hdr *ether_hd
 			uint16_t ipv4_total_length1 = rte_be_to_cpu_16(ipv4_hdr1->total_length);
 			RTE_ASSERT(ipv4_total_length1 == m->data_len - sizeof *ether_hdr1);
 
-            if (dst_port == 8000) {   // Magic number: only rate limit packets to the consensus port
-                r = apply_auth_pkt_rate_limit_filter(lcore_id, state, lf_hdr->src_ia, ipv4_total_length1);
-				printf("Inbound packet to port 8000 rate limited");
-                if (r != 0) {
-                    RTE_ASSERT(r == -1);
-                    return -1;
+            /*struct rte_udp_hdr *udp_hdr;*/
+            /*udp_hdr = (struct rte_udp_hdr *)((char *)ipv4_hdr0 + ipv4_hdr_length0);*/
+            /*uint16_t dst_port = rte_be_to_cpu_16(udp_hdr->dst_port);*/
+
+            uint16_t tcp_dst_port = 
+
+            if (ipv4_hdr1->next_proto_id == IP_PROTO_ID_TCP) {   
+                // Parse the tcp header to discover the real destination port 
+                struct rte_tcp_hdr *tcp_hdr;
+				RTE_ASSERT(sizeof *tcp_hdr <= m->data_len - sizeof *ether_hdr1 - sizeof *ipv4_hdr1);
+				tcp_hdr = (struct rte_tcp_hdr *)(ipv4_hdr1 + 1);
+                uint16_t tcp_dst_port = rte_be_to_cpu_16(tcp_hdr->dst_port);
+                if (tcp_dst_port == 8000) {  // Magic number: only rate limit packets to the consensus port
+                    r = apply_auth_pkt_rate_limit_filter(lcore_id, state, lf_hdr->src_ia, ipv4_total_length1);
+                    printf("Inbound packet to port 8000 rate limited");
+                    if (r != 0) {
+                        RTE_ASSERT(r == -1);
+                        return -1;
+                    }
                 }
             }
 
